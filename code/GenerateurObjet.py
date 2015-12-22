@@ -3,8 +3,11 @@
 import os
 import sys
 import random
-import sysv_ipc
+#import sysv_ipc
 import threading 
+import time
+from Piece import Piece
+import signal
 
 class Objet	:
 	def __init__(self, type):
@@ -13,28 +16,60 @@ class Objet	:
 		
 class GenerateurObjet(threading.Thread):
 
-	def __init__(self, q1, q2, nom):
+	def __init__(self, q1, q2, nom, nb_p,tps_gen, M1,M2):
 		threading.Thread.__init__(self)
 		self.Terminated = False 
 		self.queue1 = q1
 		self.queue2 = q2
 		self.nom = nom
+		self.nb_pieces = nb_p
+		self.machine1 = M1
+		self.machine2 = M2
+		self.tempsGen = tps_gen
 		
 	def stop(self): 
 		self.Terminated = True  
     		
 	def run(self):
 		type = ["A", "B", "C"]
-		print(self.nom)
+		
 		queueListe = [self.queue1, self.queue2]
 		j = 0
+
 		while not self.Terminated:
 			r = random.randint(0,2)
-			o = Objet(type[r])
+			p = Piece(type[r])
 			if j%2 == 0 :
-				queue = sysv_ipc.MessageQueue(self.queue1)
+				#queue = sysv_ipc.MessageQueue(self.queue1)
+				queue = self.queue1
+				
+				machine = 1
 			else :
-				queue = sysv_ipc.MessageQueue(self.queue2)
+				#queue = sysv_ipc.MessageQueue(self.queue2)
+				queue = self.queue2
+				
+				machine = 2
 			j += 1
-			queue.send(o.type)
-			print("J'ai envoye un objet de type ", o.type, " dans la file ",queue)
+			#queue.send(o.type)
+
+			#generation piece
+			time.sleep(self.tempsGen)
+
+			queue.put(p)
+			print "G: Piece non usinee {} envoyee a M{}".format(p.type_piece,machine)
+			
+
+			if j >= self.nb_pieces:
+				self.Terminated = True
+
+		#attend que tous les objets envoyés à M1 et M2 soient usinés
+		self.queue1.join()
+		self.queue2.join()
+
+		#indique aux machines qu'elles peuvent arreter
+		self.machine1.generationTerminee()
+		self.machine2.generationTerminee()
+		
+		#print "gen terminee"
+		return
+

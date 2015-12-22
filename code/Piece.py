@@ -11,5 +11,6 @@ class Piece:
 	def __init__(self,type_p):
 		self.type_piece = type_p
 
-	def usiner(temps):
+	def usiner(self,temps):
 		time.sleep(temps)
+		self.est_usinee = True

@@ -4,9 +4,15 @@ import os
 import sys
 from random import randint
 from threading import Thread
+from threading import Lock
+import Queue
 import time
+import GenerateurObjet
+from Machine import Machine
+import signal
 
 n_param = 0
+params_ok = False
 
 #si on ne fournit pas les bons arguments, on stoppe le programme
 if (len(sys.argv) > 1):
@@ -16,49 +22,46 @@ if (len(sys.argv) > 1):
 			exit(0)
 
 		n_param = int(sys.argv[2])
+		params_ok = True
+
+
+if params_ok == False:
+	print("Erreur: arguments incorrects")
+	exit(0)
 
 #----------Lancement des processus fils---------------
 
 print "Nombre de pieces a usiner : {}".format(n_param)
 
-#lancement de la machine 1
-m1pid = os.fork()
+queueM1 = Queue.Queue()
+queueM2 = Queue.Queue()
+queueR = Queue.Queue()
 
-if m1pid == 0:
-	os.execl("./machine1.py","a")
-	
+
+tempsGen = 0.5
+tempsM1 = 1
+tempsM2 = 1.5
+
+
+#lancement de la machine 1
+M1 = Machine(1,["A","B"],queueM1,queueM2,queueR,tempsM1)
+M1.start()
 
 #lancement de la machine 2
-m2pid = os.fork()
-
-if m2pid == 0:
-	os.execl("./machine2.py","a")
-	
+M2 = Machine(2,["B","C"],queueM2,queueM1,queueR,tempsM2)
+M2.start()
 
 #lancement du robot
-botpid = os.fork()
-
-if botpid == 0:
-	os.execl("./robot.py","a")
 
 
 #---------Lancement de la generation de pieces---------
-time.sleep(1)
 
-nb_pieces_generees = 0
+print("generation lancee !")
+gen = GenerateurObjet.GenerateurObjet(queueM1, queueM2, "Generateur", n_param, tempsGen, M1,M2)
+gen.start()
 
-while nb_pieces_generees <= n_param:
-	#generer piece de facon aleatoire
-	r_gen = randint(1,3)
+M1.join()
+M2.join()
+gen.join()
 
-	if r_gen == 1:
-		#generer piece a
-		print 'A'
-	elif r_gen == 2:
-		#generer piece b
-		print "B"
-	else:
-		#generer piece c
-		print "C"
-	
-	time.sleep(1)
+exit(0)
