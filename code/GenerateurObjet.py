@@ -26,9 +26,13 @@ class GenerateurObjet(threading.Thread):
 		self.machine1 = M1
 		self.machine2 = M2
 		self.tempsGen = tps_gen
+		self.historique = []
 		
 	def stop(self): 
 		self.Terminated = True  
+
+	def getHisto(self):
+		return self.historique
     		
 	def run(self):
 		type = ["A", "B", "C"]
@@ -57,7 +61,7 @@ class GenerateurObjet(threading.Thread):
 
 			queue.put(p)
 			print "G: Piece non usinee {} envoyee a M{}".format(p.type_piece,machine)
-			
+			self.historique.append(p.type_piece)
 
 			if j >= self.nb_pieces:
 				self.Terminated = True

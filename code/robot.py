@@ -8,32 +8,39 @@ import os
 import signal
 
 
-class robot(Thread):
+class Robot(Thread):
 
-	def __init__(self, qR, qA, qB, qC):
+	def __init__(self, qR, lA, lB, lC, tpsA,tpsB,tpsC):
 		threading.Thread.__init__(self)
 		self.queueR = qR
-		self.queueA = qA
-		self.queueB = qB
-		self.queueC = qC
+		self.listeA = lA
+		self.listeB = lB
+		self.listeC = lC
 		self.Terminated = False
-		self.genTerminee = False
+		self.machinesTerminees = 0
+		self.tempsA = tpsA
+		self.tempsB = tpsB
+		self.tempsC = tpsC
+		self.historique = []
 		
 
 	def stop(self):
 		self.Terminated = True
 
-	def generationTerminee(self):
-		self.genTerminee = True
+	def machineTerminee(self):
+		self.machinesTerminees+=1
+
+	def getHisto(self):
+		return self.historique
 
 	def run(self):
-		nb_p_u = 0
+		nb_p_r = 0
 
 		while not self.Terminated:
 			
 			if self.queueR.empty():
 				
-				if self.genTerminee:
+				if self.machinesTerminees == 2:
 					self.Terminated = True
 					break
 
@@ -46,31 +53,27 @@ class robot(Thread):
 			if p.type_piece == "A":
 
 				#usinage
-				p.ranger(self)
-				nb_p_u+=1
+				p.ranger(self.tempsA)
+				self.listeA.append(p)
+				nb_p_r+=1
 
-				print "M{}: Piece {} rangee".format(self.id, p.type_piece)
-				self.queueA.put(p)
-				
+
 			if p.type_piece == "B":
 
 				#usinage
-				p.ranger(self)
-				nb_p_u+=1
-
-				print "M{}: Piece {} rangee".format(self.id, p.type_piece)
-				self.queueB.put(p)
+				p.ranger(self.tempsB)
+				nb_p_r+=1
+				self.listeB.append(p)
 				
 			if p.type_piece == "C":
 
 				#usinage
-				p.ranger(self)
-				nb_p_u+=1
-
-				print "M{}: Piece {} rangee".format(self.id, p.type_piece)
-				self.queueA.put(p)
+				p.ranger(self.tempsC)
+				nb_p_r+=1
+				self.listeC.append(p)
 
 			#self.queueM.task_done() ??
-
-		print "robot fin. NBPU : {}\n".format( nb_p_u)
+			print "Piece {} rangee".format(p.type_piece)
+			self.historique.append(p.type_piece)
+		print "robot fin. NBPR : {}\n".format( nb_p_r)
 		return

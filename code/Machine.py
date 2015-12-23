@@ -9,7 +9,7 @@ import signal
 
 class Machine(Thread):
 
-	def __init__(self, id_m, types_s, qM, qM2, qR, tpsU):
+	def __init__(self, id_m, types_s, qM, qM2, qR, tpsU, R):
 		threading.Thread.__init__(self)
 		self.types_supportes = types_s
 		self.queueM = qM
@@ -19,13 +19,17 @@ class Machine(Thread):
 		self.genTerminee = False
 		self.tempsUsinage = tpsU
 		self.id = id_m
-		
+		self.robot = R
+		self.historique = []
 
 	def stop(self):
 		self.Terminated = True
 
 	def generationTerminee(self):
 		self.genTerminee = True
+
+	def getHisto(self):
+		return self.historique
 
 	def run(self):
 		nb_p_u = 0
@@ -49,6 +53,7 @@ class Machine(Thread):
 				#usinage
 				p.usiner(self.tempsUsinage)
 				nb_p_u+=1
+				self.historique.append(p.type_piece)
 
 				print "M{}: Piece {} usinee".format(self.id, p.type_piece)
 				self.queueR.put(p)
@@ -60,5 +65,6 @@ class Machine(Thread):
 
 			self.queueM.task_done()
 
+		self.robot.machineTerminee()
 		print "M{} termine. NBPU : {}\n".format(self.id, nb_p_u)
 		return

@@ -16,5 +16,6 @@ class Piece:
 		time.sleep(temps)
 		self.est_usinee = True
 		
-	def ranger(self):
+	def ranger(self, temps):
+		time.sleep(temps)
 		self.est_rangee = True
