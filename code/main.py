@@ -36,6 +36,9 @@ print "Nombre de pieces a usiner : {}".format(n_param)
 queueM1 = Queue.Queue()
 queueM2 = Queue.Queue()
 queueR = Queue.Queue()
+queueA = Queue.Queue()
+queueB = Queue.Queue()
+queueC = Queue.Queue()
 
 
 tempsGen = 0.5
@@ -52,6 +55,9 @@ M2 = Machine(2,["B","C"],queueM2,queueM1,queueR,tempsM2)
 M2.start()
 
 #lancement du robot
+Rob = Robot(queueR,queueA, queueB, queueC)
+Rob.start()
+
 
 
 #---------Lancement de la generation de pieces---------
