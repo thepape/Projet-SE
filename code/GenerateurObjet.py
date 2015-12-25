@@ -16,7 +16,7 @@ class Objet	:
 		
 class GenerateurObjet(threading.Thread):
 
-	def __init__(self, q1, q2, nom, nb_p,tps_gen, M1,M2):
+	def __init__(self, q1, q2, nom, nb_p,tps_gen, M1,M2,do):
 		threading.Thread.__init__(self)
 		self.Terminated = False 
 		self.queue1 = q1
@@ -27,6 +27,7 @@ class GenerateurObjet(threading.Thread):
 		self.machine2 = M2
 		self.tempsGen = tps_gen
 		self.historique = []
+		self.dock_only = do
 		
 	def stop(self): 
 		self.Terminated = True  
@@ -60,7 +61,9 @@ class GenerateurObjet(threading.Thread):
 			time.sleep(self.tempsGen)
 
 			queue.put(p)
-			print "G: Piece non usinee {} envoyee a M{}".format(p.type_piece,machine)
+
+			if not self.dock_only:
+				print "G: Piece non usinee {} envoyee a M{}".format(p.type_piece,machine)
 			self.historique.append(p.type_piece)
 
 			if j >= self.nb_pieces:

@@ -10,7 +10,7 @@ import signal
 
 class Robot(Thread):
 
-	def __init__(self, qR, lA, lB, lC, tpsA,tpsB,tpsC):
+	def __init__(self, qR, lA, lB, lC, tpsA,tpsB,tpsC,nbp):
 		threading.Thread.__init__(self)
 		self.queueR = qR
 		self.listeA = lA
@@ -22,6 +22,7 @@ class Robot(Thread):
 		self.tempsB = tpsB
 		self.tempsC = tpsC
 		self.historique = []
+		self.nbp = nbp
 		
 
 	def stop(self):
@@ -73,7 +74,7 @@ class Robot(Thread):
 				self.listeC.append(p)
 
 			#self.queueM.task_done() ??
-			print "Piece {} rangee".format(p.type_piece)
+			print "R: Piece {} rangee ({}/{})".format(p.type_piece,nb_p_r,self.nbp)
 			self.historique.append(p.type_piece)
-		print "robot fin. NBPR : {}\n".format( nb_p_r)
+		print "robot fin.\nNombre de pieces rangees : {}\n".format( nb_p_r)
 		return
