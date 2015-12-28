@@ -1,8 +1,17 @@
 #!/usr/bin/python
 
+# Classe representant une piece
+#
+# CHABOISSIER Maxime
+# MARTEAUX Anais
+# PAPELIER Romain
+# ROLLINGER Jerome
+#
+# Projet SE 2015 - Simulation d'usinage en temps reel
+
 import time
 
-#classe d'une piece a usiner
+
 class Piece:
 
 	type_piece = ''

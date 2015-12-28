@@ -22,19 +22,31 @@ import signal
 from robot import Robot
 
 #----variables globales (parmetres de simulation)-----
+
+#nombre de pieces a usiner
 n_param = 5
+
+#temps de generation par piece
 tempsGen = 0.5
 
+#temps d'usinage des pieces A par la machine 1
 tempsM1a = 1
+#temps d'usinage des pieces B par la machine 1
 tempsM1b = 1
 
+#temps d'usinage des pieces B par la machine 2
 tempsM2b = 1
+#temps d'usinage des pieces C par la machine 2
 tempsM2c = 1
 
+#temps de rangement des pieces A
 tempsRA = 1
+#temps de rangement des pieces B
 tempsRB = 1
+#temps de rangement des pieces C
 tempsRC = 1
 
+#definit si on affiche uniquement le rangement des pieces
 dock_only = False
 
 #params_ok = False
@@ -122,10 +134,12 @@ print("GENERATION LANCEE !")
 gen = GenerateurObjet.GenerateurObjet(queueM1, queueM2, "Generateur", n_param, tempsGen, M1,M2,dock_only)
 gen.start()
 
+#enregistrement de la date de debut de fabrication
 chronoDeb = time.time()
 
 Rob.join()
 
+#enregistrement de la date de fin de rangement
 chronoFin = time.time()
 
 M1.join()
@@ -145,19 +159,6 @@ print ""
 print "Pieces usinees par M1: {}".format(histo1)
 print "Pieces usinees par M2: {}".format(histo2)
 print "\n---ETAT ENTREPOT---"
-
-entA = []
-entB = []
-entC = []
-
-for p in listeA:
-	entA.append(p.type_piece)
-
-for p in listeB:
-	entB.append(p.type_piece)
-
-for p in listeC:
-	entC.append(p.type_piece)
 
 print "Entrepot A : {} pieces".format(len(listeA))
 print "Entrepot B : {} pieces".format(len(listeB))

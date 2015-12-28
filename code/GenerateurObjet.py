@@ -1,5 +1,15 @@
 #! /usr/bin/python 
 # -*- coding: utf8 -*- 
+
+# Classe representant un generateur de pieces
+#
+# CHABOISSIER Maxime
+# MARTEAUX Anais
+# PAPELIER Romain
+# ROLLINGER Jerome
+#
+# Projet SE 2015 - Simulation d'usinage en temps reel
+
 import os
 import sys
 import random
@@ -9,13 +19,11 @@ import time
 from Piece import Piece
 import signal
 
-class Objet	:
-	def __init__(self, type):
-		self.type = type
-		
+	
 		
 class GenerateurObjet(threading.Thread):
 
+	#constructeur
 	def __init__(self, q1, q2, nom, nb_p,tps_gen, M1,M2,do):
 		threading.Thread.__init__(self)
 		self.Terminated = False 
@@ -29,12 +37,15 @@ class GenerateurObjet(threading.Thread):
 		self.historique = []
 		self.dock_only = do
 		
+	#permet d'indiquer au generateur de s'arreter
 	def stop(self): 
 		self.Terminated = True  
 
+	#retourne l'historique de generation
 	def getHisto(self):
 		return self.historique
     		
+    #methode RUN du thread
 	def run(self):
 		type = ["A", "B", "C"]
 		
@@ -45,17 +56,17 @@ class GenerateurObjet(threading.Thread):
 			r = random.randint(0,2)
 			p = Piece(type[r])
 			if j%2 == 0 :
-				#queue = sysv_ipc.MessageQueue(self.queue1)
+				
 				queue = self.queue1
 				
 				machine = 1
 			else :
-				#queue = sysv_ipc.MessageQueue(self.queue2)
+				
 				queue = self.queue2
 				
 				machine = 2
 			j += 1
-			#queue.send(o.type)
+			
 
 			#generation piece
 			time.sleep(self.tempsGen)
@@ -73,7 +84,7 @@ class GenerateurObjet(threading.Thread):
 		self.queue1.join()
 		self.queue2.join()
 
-		#indique aux machines qu'elles peuvent arreter
+		#indique aux machines que la generation est terminee
 		self.machine1.generationTerminee()
 		self.machine2.generationTerminee()
 		

@@ -1,5 +1,14 @@
 #!/usr/bin/python
 
+# Classe representant le robot de rangement
+#
+# CHABOISSIER Maxime
+# MARTEAUX Anais
+# PAPELIER Romain
+# ROLLINGER Jerome
+#
+# Projet SE 2015 - Simulation d'usinage en temps reel
+
 from threading import Thread
 from threading import Lock
 import threading
@@ -28,6 +37,8 @@ class Robot(Thread):
 	def stop(self):
 		self.Terminated = True
 
+	#indique au robot qu'une machine a fini d'usiner.
+	#permet au robot de ne pas bloquer lorsque la file est vide et que les machines ont fini
 	def machineTerminee(self):
 		self.machinesTerminees+=1
 
@@ -47,6 +58,7 @@ class Robot(Thread):
 
 				continue
 
+			#bloque si la file est vide mais que les machines n'ont pas fini d'usiner
 			p = self.queueR.get()
 			
 
